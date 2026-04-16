@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 성결대학교 학식 리뷰 앱의 백엔드 서버.
 - **Stack**: Spring Boot 3.5 / Java 17 / Gradle 8.14 / PostgreSQL
 - **Deployment**: Railway (backend), Vercel (frontend)
-- **Auth**: Google OAuth2 + JWT (구현 예정)
+- **Auth**: Google OAuth2 idToken 검증 + JWT (구현 완료)
 
 ## Commands
 
@@ -45,13 +45,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 com.sungkyul.cafeteria
-├── CafeteriaApplication.java          # @SpringBootApplication 진입점
-├── common/                            # 횡단 관심사
-│   ├── config/SecurityConfig.java     # Security + CORS 설정
+├── CafeteriaApplication.java
+├── common/
+│   ├── config/
+│   │   ├── AppConfig.java          # RestTemplate 빈
+│   │   └── SecurityConfig.java     # Security + CORS + JwtAuthFilter 등록
 │   ├── controller/HealthController.java  # GET /api/v1/health
 │   └── exception/
-│       ├── ErrorResponse.java         # 공통 에러 응답 record
+│       ├── ErrorResponse.java      # 공통 에러 응답 record
 │       └── GlobalExceptionHandler.java   # @RestControllerAdvice
+├── auth/                           # 인증 도메인 (STEP3 완료)
+│   ├── controller/AuthController.java
+│   ├── dto/LoginRequest.java, LoginResponse.java, UserResponse.java
+│   ├── jwt/JwtProvider.java, JwtAuthFilter.java
+│   └── service/AuthService.java
 ├── user/
 │   ├── entity/User.java
 │   └── repository/UserRepository.java
@@ -71,6 +78,31 @@ com.sungkyul.cafeteria
 - 에러 응답은 반드시 `ErrorResponse` record 형식 사용 (`GlobalExceptionHandler`가 자동 처리)
 - 새로운 예외 타입이 필요하면 `GlobalExceptionHandler`에 `@ExceptionHandler` 추가
 
+### Auth Flow
+
+1. 프론트에서 Google 로그인 후 `idToken`을 `POST /api/v1/auth/google`로 전송
+2. `AuthService.verifyGoogleToken()` → `https://oauth2.googleapis.com/tokeninfo?id_token=` 호출로 검증
+3. `User` upsert (googleId로 조회 → 없으면 `save`, 있으면 `user.updateProfile()`)
+4. `JwtProvider`로 accessToken / refreshToken 발급 → `LoginResponse` 반환
+5. 이후 요청은 `Authorization: Bearer {accessToken}` 헤더로 인증
+6. `JwtAuthFilter` → 토큰 유효 시 `SecurityContextHolder`에 userId(Long) 저장
+7. `GET /api/v1/auth/me` → `Authentication.getPrincipal()`에서 userId 추출
+
+### Security 인가 규칙
+
+`SecurityConfig.filterChain()`에 정의된 현재 규칙:
+
+| 경로 | 메서드 | 인증 |
+|------|--------|------|
+| `/api/v1/auth/google` | POST | permitAll |
+| `/api/v1/health` | GET | permitAll |
+| `/api/v1/menus/**` | GET | permitAll |
+| `/api/v1/reviews/**` | GET | permitAll |
+| 나머지 | * | authenticated |
+
+JWT 없는 authenticated 요청은 `AuthenticationEntryPoint`가 401 반환.
+CORS 허용 오리진은 `SecurityConfig.corsConfigurationSource()`에서 관리한다. 배포 시 Vercel 도메인을 추가해야 한다.
+
 ### Domain Rules
 
 - **리뷰**: 1인 1메뉴 1리뷰 (`uk_review_user_menu` UNIQUE 제약 — `user_id + menu_id`)
@@ -86,25 +118,14 @@ com.sungkyul.cafeteria
 | `dev` (기본) | 로컬 개발 | `update` | 기본값 |
 | `prod` | Railway 배포 | `validate` | `SPRING_PROFILES_ACTIVE=prod` |
 
-prod 프로파일의 DB 연결 정보는 환경변수 `SPRING_DATASOURCE_URL` / `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` 로 주입한다.
-
-### Security
-
-현재 모든 요청 `permitAll`. JWT 필터를 추가할 때는 `SecurityConfig.filterChain()` 안에서 `http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)` 패턴을 사용하고, `authorizeHttpRequests` 규칙을 세분화한다.
-
-CORS 허용 오리진은 `SecurityConfig.corsConfigurationSource()`에서 관리한다. 배포 시 Vercel 도메인을 추가해야 한다.
+prod 프로파일의 DB 연결 정보는 환경변수 `SPRING_DATASOURCE_URL` / `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD`로 주입한다.
+JWT 시크릿은 환경변수 `JWT_SECRET`으로 주입한다 (기본값: dev용 임시 키).
 
 ## Current Progress
 
 - [x] STEP1: 프로젝트 초기 셋업 (HealthController, SecurityConfig, GlobalExceptionHandler)
 - [x] STEP2: DB 스키마 및 Entity (User, Menu, Review + Repository)
-- [ ] STEP3: Google OAuth2 + JWT 로그인
+- [x] STEP3: Google OAuth2 + JWT 로그인
 - [ ] STEP4: 학식 크롤러
 - [ ] STEP5: 메뉴 조회 API
 - [ ] STEP6: 리뷰 CRUD API
-
-## Pending Cleanup
-
-- `backend/src/main/java/com/example/sku_cafeteria_review/` — 구 패키지 디렉토리, 삭제 필요
-- `backend/src/test/java/com/example/sku_cafeteria_review/` — 구 테스트 클래스, 삭제 필요
-- `backend/src/main/resources/application.yaml` — `application.yml`로 대체됨, 삭제 필요
