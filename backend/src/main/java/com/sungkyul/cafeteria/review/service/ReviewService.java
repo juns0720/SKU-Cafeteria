@@ -1,8 +1,14 @@
 package com.sungkyul.cafeteria.review.service;
 
+import com.sungkyul.cafeteria.menu.entity.Menu;
+import com.sungkyul.cafeteria.menu.repository.MenuRepository;
+import com.sungkyul.cafeteria.review.dto.ReviewRequest;
 import com.sungkyul.cafeteria.review.dto.ReviewResponse;
 import com.sungkyul.cafeteria.review.entity.Review;
 import com.sungkyul.cafeteria.review.repository.ReviewRepository;
+import com.sungkyul.cafeteria.user.entity.User;
+import com.sungkyul.cafeteria.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,12 +22,36 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public Page<ReviewResponse> getReviews(Long menuId, int page, int size, Long currentUserId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return reviewRepository.findByMenuId(menuId, pageable)
                 .map(review -> toResponse(review, currentUserId));
+    }
+
+    @Transactional
+    public ReviewResponse createReview(Long userId, ReviewRequest request) {
+        Menu menu = menuRepository.findById(request.menuId())
+                .orElseThrow(() -> new EntityNotFoundException("메뉴를 찾을 수 없습니다"));
+
+        if (reviewRepository.existsByUserIdAndMenuId(userId, request.menuId())) {
+            throw new IllegalStateException("이미 리뷰를 작성하셨습니다");
+        }
+
+        User user = userRepository.getReferenceById(userId);
+
+        Review review = Review.builder()
+                .user(user)
+                .menu(menu)
+                .rating(request.rating())
+                .comment(request.comment())
+                .build();
+
+        Review saved = reviewRepository.save(review);
+        return toResponse(saved, userId);
     }
 
     private ReviewResponse toResponse(Review review, Long currentUserId) {

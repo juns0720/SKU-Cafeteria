@@ -37,6 +37,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(400, e.getMessage()));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(409, e.getMessage()));
+    }
+
     /**
      * JPA 엔티티 조회 실패 → 404 Not Found.
      * 예외 메시지를 그대로 클라이언트에 전달한다.
