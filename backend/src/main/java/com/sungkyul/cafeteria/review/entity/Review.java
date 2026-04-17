@@ -63,4 +63,9 @@ public class Review {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    public void update(int rating, String comment) {
+        this.rating = rating;
+        this.comment = comment;
+    }
 }

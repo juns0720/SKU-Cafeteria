@@ -4,6 +4,7 @@ import com.sungkyul.cafeteria.menu.entity.Menu;
 import com.sungkyul.cafeteria.menu.repository.MenuRepository;
 import com.sungkyul.cafeteria.review.dto.ReviewRequest;
 import com.sungkyul.cafeteria.review.dto.ReviewResponse;
+import com.sungkyul.cafeteria.review.dto.ReviewUpdateRequest;
 import com.sungkyul.cafeteria.review.entity.Review;
 import com.sungkyul.cafeteria.review.repository.ReviewRepository;
 import com.sungkyul.cafeteria.user.entity.User;
@@ -52,6 +53,19 @@ public class ReviewService {
 
         Review saved = reviewRepository.save(review);
         return toResponse(saved, userId);
+    }
+
+    @Transactional
+    public ReviewResponse updateReview(Long userId, Long reviewId, ReviewUpdateRequest request) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다"));
+
+        if (!review.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("리뷰 수정 권한이 없습니다");
+        }
+
+        review.update(request.rating(), request.comment());
+        return toResponse(review, userId);
     }
 
     private ReviewResponse toResponse(Review review, Long currentUserId) {

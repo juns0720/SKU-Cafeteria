@@ -2,6 +2,7 @@ package com.sungkyul.cafeteria.review.controller;
 
 import com.sungkyul.cafeteria.review.dto.ReviewRequest;
 import com.sungkyul.cafeteria.review.dto.ReviewResponse;
+import com.sungkyul.cafeteria.review.dto.ReviewUpdateRequest;
 import com.sungkyul.cafeteria.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,16 @@ public class ReviewController {
                 ? (Long) authentication.getPrincipal()
                 : null;
         return ResponseEntity.ok(reviewService.getReviews(menuId, page, size, currentUserId));
+    }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewResponse> updateReview(
+            @PathVariable Long reviewId,
+            @Valid @RequestBody ReviewUpdateRequest request,
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(reviewService.updateReview(userId, reviewId, request));
     }
 
     @PostMapping
