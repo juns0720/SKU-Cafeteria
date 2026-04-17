@@ -22,6 +22,12 @@ public class AdminController {
     @PostMapping("/crawl")
     public ResponseEntity<Map<String, Object>> crawl() {
         CrawlingResult result = menuCrawlerService.crawlAndSave();
+        if (result.errorMessage() != null) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "크롤링 실패",
+                    "error", result.errorMessage()
+            ));
+        }
         return ResponseEntity.ok(Map.of(
                 "message", "크롤링 완료",
                 "savedCount", result.savedCount(),

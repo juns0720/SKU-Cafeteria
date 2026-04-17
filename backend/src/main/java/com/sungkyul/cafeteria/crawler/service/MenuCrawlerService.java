@@ -11,11 +11,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -27,14 +32,29 @@ public class MenuCrawlerService {
 
     private final MenuRepository menuRepository;
 
+    /** 테스트에서 stubbing 가능하도록 분리 (package-private) */
+    Document fetchDocument() throws Exception {
+        // 성결대 웹사이트는 한국 CA 인증서를 사용하여 JVM 기본 truststore에 없음
+        // SSL 검증을 우회하는 커스텀 context 사용
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+            public void checkClientTrusted(X509Certificate[] c, String a) {}
+            public void checkServerTrusted(X509Certificate[] c, String a) {}
+        }}, new java.security.SecureRandom());
+
+        return Jsoup.connect(TARGET_URL)
+                .timeout(TIMEOUT_MS)
+                .sslSocketFactory(sslContext.getSocketFactory())
+                .get();
+    }
+
     public CrawlingResult crawlAndSave() {
         int savedCount = 0;
         int skippedCount = 0;
 
         try {
-            Document doc = Jsoup.connect(TARGET_URL)
-                    .timeout(TIMEOUT_MS)
-                    .get();
+            Document doc = fetchDocument();
 
             Element table = doc.selectFirst("table");
             if (table == null) {
@@ -64,6 +84,9 @@ public class MenuCrawlerService {
                 for (int i = 1; i < cells.size() && (i - 1) < dates.size(); i++) {
                     LocalDate servedDate = dates.get(i - 1);
                     Element cell = cells.get(i);
+
+                    // 주말 등 데이터 없는 셀 skip
+                    if (cell.hasClass("no-data")) continue;
 
                     // br 태그 기준으로 줄 분리
                     List<String> menuNames = splitByBr(cell);
@@ -100,9 +123,7 @@ public class MenuCrawlerService {
 
     public String debugHtml() {
         try {
-            Document doc = Jsoup.connect(TARGET_URL)
-                    .timeout(TIMEOUT_MS)
-                    .get();
+            Document doc = fetchDocument();
             return doc.outerHtml();
         } catch (Exception e) {
             log.error("[Crawler] debugHtml 오류: {}", e.getMessage(), e);
@@ -111,49 +132,31 @@ public class MenuCrawlerService {
     }
 
     /**
-     * thead의 th에서 날짜를 파싱한다. 첫 번째 th(코너명)는 skip.
-     * th 텍스트 예시: "04/14(월)", "4/14", "2024-04-14" 등 다양한 형식을 처리한다.
+     * thead의 th에서 날짜를 파싱한다. 첫 번째 th(class="title")는 skip.
+     *
+     * 실제 HTML 구조:
+     *   <th scope="col">월<br>2026.04.13</th>
+     *
+     * Jsoup .text() 호출 시 br 사이의 텍스트가 공백으로 합쳐져 "월 2026.04.13" 형태가 된다.
+     * yyyy.MM.dd 패턴을 정규식으로 직접 추출한다.
      */
+    private static final Pattern DATE_PATTERN = Pattern.compile("(\\d{4}\\.\\d{2}\\.\\d{2})");
+    private static final DateTimeFormatter DOT_DATE_FMT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
     private List<LocalDate> parseDates(Element table) {
         List<LocalDate> dates = new ArrayList<>();
         Elements headers = table.select("thead tr th");
 
-        int year = LocalDate.now().getYear();
-
         for (int i = 1; i < headers.size(); i++) {
             String text = headers.get(i).text().trim();
-            // 괄호 제거: "04/14(월)" → "04/14"
-            text = text.replaceAll("\\(.*\\)", "").trim();
-
-            LocalDate date = tryParseDate(text, year);
-            if (date != null) {
-                dates.add(date);
+            Matcher m = DATE_PATTERN.matcher(text);
+            if (m.find()) {
+                dates.add(LocalDate.parse(m.group(1), DOT_DATE_FMT));
             } else {
-                log.warn("[Crawler] 날짜 파싱 실패: '{}'", headers.get(i).text());
+                log.warn("[Crawler] 날짜 파싱 실패: '{}'", text);
             }
         }
         return dates;
-    }
-
-    private LocalDate tryParseDate(String text, int year) {
-        // MM/dd 또는 M/d 형식
-        if (text.matches("\\d{1,2}/\\d{1,2}")) {
-            try {
-                String[] parts = text.split("/");
-                int month = Integer.parseInt(parts[0]);
-                int day = Integer.parseInt(parts[1]);
-                return LocalDate.of(year, month, day);
-            } catch (Exception ignored) {}
-        }
-        // yyyy-MM-dd 형식
-        try {
-            return LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE);
-        } catch (DateTimeParseException ignored) {}
-        // yyyy.MM.dd 형식
-        try {
-            return LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-        } catch (DateTimeParseException ignored) {}
-        return null;
     }
 
     /**
