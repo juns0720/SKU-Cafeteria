@@ -56,6 +56,18 @@ public class ReviewService {
     }
 
     @Transactional
+    public void deleteReview(Long userId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다"));
+
+        if (!review.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("리뷰 삭제 권한이 없습니다");
+        }
+
+        reviewRepository.delete(review);
+    }
+
+    @Transactional
     public ReviewResponse updateReview(Long userId, Long reviewId, ReviewUpdateRequest request) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다"));
