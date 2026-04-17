@@ -10,7 +10,7 @@
 
 ## 다음 작업
 
-- [ ] FE-4-3: ReviewsPage (Mock)
+- [ ] FE-4-4: 메뉴 상세 모달 + ReviewItem
 
 ## 전체 단계 목록
 
@@ -33,7 +33,7 @@
 [페이지 - Mock 데이터]
 - [x] FE-4-1: HomePage + MenuCard (Mock)
 - [x] FE-4-2: WeeklyPage + WeekTab (Mock)
-- [ ] FE-4-3: ReviewsPage (Mock)
+- [x] FE-4-3: ReviewsPage (Mock)
 - [ ] FE-4-4: 메뉴 상세 모달 + ReviewItem
 
 [리뷰 기능]
