@@ -33,8 +33,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
         return ResponseEntity
-                .badRequest()
-                .body(ErrorResponse.of(400, e.getMessage()));
+                .status(HttpStatus.FORBIDDEN)
+                .body(ErrorResponse.of(403, e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(409, e.getMessage()));
     }
 
     /**
