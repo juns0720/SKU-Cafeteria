@@ -1,5 +1,6 @@
 package com.sungkyul.cafeteria.menu.controller;
 
+import com.sungkyul.cafeteria.menu.dto.MenuResponse;
 import com.sungkyul.cafeteria.menu.dto.TodayMenuResponse;
 import com.sungkyul.cafeteria.menu.dto.WeeklyMenuResponse;
 import com.sungkyul.cafeteria.menu.service.MenuService;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,5 +33,10 @@ public class MenuController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         return ResponseEntity.ok(menuService.getWeeklyMenus(date));
+    }
+
+    @GetMapping("/{menuId}")
+    public ResponseEntity<MenuResponse> getMenuDetail(@PathVariable Long menuId) {
+        return ResponseEntity.ok(menuService.getMenuDetail(menuId));
     }
 }

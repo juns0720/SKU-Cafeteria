@@ -5,6 +5,7 @@ import com.sungkyul.cafeteria.menu.dto.TodayMenuResponse;
 import com.sungkyul.cafeteria.menu.dto.WeeklyMenuResponse;
 import com.sungkyul.cafeteria.menu.entity.Menu;
 import com.sungkyul.cafeteria.menu.repository.MenuRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,5 +78,20 @@ public class MenuService {
         }
 
         return new WeeklyMenuResponse(monday, friday, days);
+    }
+
+    @Transactional(readOnly = true)
+    public MenuResponse getMenuDetail(Long menuId) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new EntityNotFoundException("메뉴를 찾을 수 없습니다"));
+
+        return new MenuResponse(
+                menu.getId(),
+                menu.getName(),
+                menu.getCorner(),
+                menu.getServedDate(),
+                menuRepository.findAverageRatingByMenuId(menu.getId()),
+                menuRepository.countReviewsByMenuId(menu.getId())
+        );
     }
 }
