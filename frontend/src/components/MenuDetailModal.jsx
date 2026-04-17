@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import StarDisplay from './StarDisplay'
 import ReviewItem from './ReviewItem'
@@ -20,7 +21,7 @@ export default function MenuDetailModal({ menu, isLoggedIn, onClose }) {
 
   const fallbackBg = CORNER_COLORS[menu.corner] ?? 'bg-gray-300'
 
-  return (
+  return createPortal(
     <>
       {/* Overlay */}
       <div
@@ -89,6 +90,7 @@ export default function MenuDetailModal({ menu, isLoggedIn, onClose }) {
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   )
 }
