@@ -13,12 +13,14 @@
 
 | 메서드 | 경로 | 인증 | 설명 |
 |---|---|---|---|
+| GET | `/menus?sort=` | 불필요 | 리뷰 있는 전체 메뉴 목록 |
 | GET | `/menus/today` | 불필요 | 오늘 학식 목록 |
 | GET | `/menus/weekly?date=yyyy-MM-dd` | 불필요 | 해당 주 월~금 식단 (`date` 생략 시 이번 주) |
 | GET | `/menus/{menuId}` | 불필요 | 메뉴 단건 상세 (없으면 404) |
 
 - `MenuResponse`에 `averageRating`(null 가능), `reviewCount` 포함
 - `/menus/weekly` 응답 `days` 필드: `"MON"~"FRI"` 키, 데이터 없는 요일은 빈 리스트
+- `/menus?sort=` 정렬 옵션: `rating`(평균 별점↓), `reviewCount`(리뷰수↓), `date` 또는 생략(날짜↓)
 
 ## Reviews
 

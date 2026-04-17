@@ -27,3 +27,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - @docs/api.md — 전체 API 엔드포인트, 에러 응답 형식, Exception → HTTP Status 매핑
 - @docs/conventions.md — 레이어 구조, 도메인 규칙, 엔티티 수정 패턴, 응답 코드 규칙
 - @docs/progress.md — 구현 진행 체크리스트, Known Issues / TODO
+
+## /init 규칙
+
+/init 실행 시 아래 규칙을 따를 것:
+
+1. CLAUDE.md는 70줄 이내로 유지
+    - 핵심 정보만 (스택, 패키지 루트, 포트, 배포)
+    - 나머지는 docs/ 파일에 위임
+
+2. 변경 사항 반영 위치
+    - 새 패키지/클래스 추가 → docs/architecture.md 업데이트
+    - 새 API 추가 → docs/api.md 업데이트
+    - STEP 완료 → docs/progress.md 체크리스트 업데이트
+    - 새 규칙/컨벤션 → docs/conventions.md 업데이트
+
+3. CLAUDE.md에 직접 추가하지 말 것
+    - 긴 코드 예시
+    - 전체 API 목록
+    - 상세 패키지 구조
+
+## 새 세션 시작 시
+
+새로운 세션을 시작할 때는 반드시 아래 명령을 실행할 것:
+
+@docs/skills/project-review.md 를 읽고 순서대로 실행해줘.
