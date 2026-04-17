@@ -10,7 +10,7 @@
 
 ## 다음 작업
 
-- [ ] FE-4-1: HomePage + MenuCard (Mock)
+- [ ] FE-5-1: StarRating (입력용)
 
 ## 전체 단계 목록
 
@@ -31,10 +31,11 @@
 - [x] FE-3-2: Google 로그인 버튼
 
 [페이지 - Mock 데이터]
-- [ ] FE-4-1: HomePage + MenuCard (Mock)
-- [ ] FE-4-2: WeeklyPage + WeekTab (Mock)
-- [ ] FE-4-3: ReviewsPage (Mock)
-- [ ] FE-4-4: 메뉴 상세 모달 + ReviewItem
+- [x] FE-4-1: HomePage + MenuCard (Mock)
+- [x] FE-4-2: WeeklyPage + WeekTab (Mock)
+- [x] FE-4-3: ReviewsPage (Mock)
+- [x] FE-4-4: 메뉴 상세 모달 + ReviewItem
+- [x] FE-4-5: HomePage·ReviewsPage 모달 미작동 버그 수정
 
 [리뷰 기능]
 - [ ] FE-5-1: StarRating (입력용)
