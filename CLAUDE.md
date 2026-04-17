@@ -17,12 +17,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # 개발 서버 실행 (dev 프로파일)
 ./gradlew bootRun
 
-# 프로파일 지정 실행
-./gradlew bootRun --args='--spring.profiles.active=prod'
-
-# 빌드 (테스트 포함)
-./gradlew build
-
 # 빌드 (테스트 제외)
 ./gradlew build -x test
 
@@ -30,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew test
 
 # 단일 테스트 클래스 실행
-./gradlew test --tests "com.sungkyul.cafeteria.SomeTest"
+./gradlew test --tests "com.sungkyul.cafeteria.crawler.service.MenuCrawlerServiceTest"
 
 # 단일 테스트 메서드 실행
 ./gradlew test --tests "com.sungkyul.cafeteria.SomeTest.methodName"
@@ -54,11 +48,17 @@ com.sungkyul.cafeteria
 │   └── exception/
 │       ├── ErrorResponse.java      # 공통 에러 응답 record
 │       └── GlobalExceptionHandler.java   # @RestControllerAdvice
-├── auth/                           # 인증 도메인 (STEP3 완료)
+├── auth/                           # 인증 도메인
 │   ├── controller/AuthController.java
 │   ├── dto/LoginRequest.java, LoginResponse.java, UserResponse.java
 │   ├── jwt/JwtProvider.java, JwtAuthFilter.java
 │   └── service/AuthService.java
+├── admin/
+│   └── controller/AdminController.java   # POST /api/v1/admin/crawl, GET /api/v1/admin/crawl/debug
+├── crawler/
+│   ├── dto/CrawlingResult.java
+│   ├── scheduler/CrawlerScheduler.java   # 매주 월요일 08:00 자동 실행
+│   └── service/MenuCrawlerService.java   # Jsoup 기반 크롤링
 ├── user/
 │   ├── entity/User.java
 │   └── repository/UserRepository.java
@@ -98,17 +98,26 @@ com.sungkyul.cafeteria
 | `/api/v1/health` | GET | permitAll |
 | `/api/v1/menus/**` | GET | permitAll |
 | `/api/v1/reviews/**` | GET | permitAll |
+| `/api/v1/admin/**` | * | authenticated |
 | 나머지 | * | authenticated |
 
 JWT 없는 authenticated 요청은 `AuthenticationEntryPoint`가 401 반환.
 CORS 허용 오리진은 `SecurityConfig.corsConfigurationSource()`에서 관리한다. 배포 시 Vercel 도메인을 추가해야 한다.
 
+### Crawler 구조
+
+- **대상 URL**: `https://www.sungkyul.ac.kr/skukr/340/subview.do`
+- **HTML 구조**: `<th>요일<br>yyyy.MM.dd</th>` 헤더, `<td class="no-data">` 주말 빈칸
+- **날짜 파싱**: `\d{4}\.\d{2}\.\d{2}` 정규식으로 추출 (`parseDates()`)
+- **SSL 이슈**: 성결대 사이트는 KISA(한국 CA) 인증서를 사용해 JVM 기본 truststore에 없음 → `fetchDocument()`에서 trust-all `SSLContext`로 우회
+- **테스트 설계**: `fetchDocument()`가 package-private이라 같은 패키지의 테스트에서 Mockito `spy`로 stubbing 가능 (`MenuCrawlerServiceTest`)
+
 ### Domain Rules
 
 - **리뷰**: 1인 1메뉴 1리뷰 (`uk_review_user_menu` UNIQUE 제약 — `user_id + menu_id`)
 - **별점**: 1~5점 정수 (`@Min(1) @Max(5)`)
-- **코멘트**: 최대 500자, nullable (별점만 남길 수 있음)
-- **메뉴**: 매주 월요일 자동 크롤링, 수동 트리거 API 별도 제공 예정
+- **코멘트**: 최대 500자, nullable
+- **메뉴**: 매주 월요일 자동 크롤링, 수동 트리거 `POST /api/v1/admin/crawl`
   - 중복 방지 UNIQUE 제약: `uk_menu_name_corner_date` (`name + corner + served_date`)
 
 ### Configuration Profiles
@@ -126,7 +135,7 @@ JWT 시크릿은 환경변수 `JWT_SECRET`으로 주입한다 (기본값: dev용
 - [x] STEP1: 프로젝트 초기 셋업 (HealthController, SecurityConfig, GlobalExceptionHandler)
 - [x] STEP2: DB 스키마 및 Entity (User, Menu, Review + Repository)
 - [x] STEP3: Google OAuth2 + JWT 로그인
-- [ ] STEP4: 학식 크롤러
+- [x] STEP4: 학식 크롤러 (MenuCrawlerService, CrawlerScheduler, AdminController) + 단위 테스트
 - [ ] STEP5: 메뉴 조회 API
 - [ ] STEP6: 리뷰 CRUD API
 
@@ -134,3 +143,4 @@ JWT 시크릿은 환경변수 `JWT_SECRET`으로 주입한다 (기본값: dev용
 - [ ] RefreshToken 관리 미구현 (현재 발급만 하고 저장 안 함)
   → 백엔드 완료 후 Redis로 구현 예정
   → Upstash Redis 무료 플랜 사용 예정 (10,000 req/일)
+- [ ] AdminController 인가: 현재 일반 JWT로 접근 가능 → 추후 ROLE_ADMIN 분리 필요

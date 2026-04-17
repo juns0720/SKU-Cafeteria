@@ -1,7 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./gradlew compileJava)"
+      "Bash(./gradlew compileJava)",
+      "Bash(./gradlew test *)",
+      "Bash(curl *)",
+      "Bash(./gradlew bootRun)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s http://localhost:8080/api/v1/admin/crawl/debug)",
+      "Bash(echo \"HTTP status: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/admin/crawl/debug\\)\")",
+      "Read(//tmp/**)",
+      "Bash(python3 *)",
+      "Bash(mkdir -p ~/cafeteria_debug)",
+      "Read(//c/Users/juns0720/cafeteria_debug/**)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 16004)",
+      "Bash(awk '{print $5}')",
+      "Bash(break)",
+      "Bash(taskkill //F //PID 32696)"
     ]
   }
 }
