@@ -6,6 +6,13 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        shimmer: 'shimmer 1.5s infinite linear',
+        fadeIn: 'fadeIn 0.2s ease forwards',
+      },
+      backgroundSize: {
+        '200': '200% 100%',
+      },
       colors: {
         primary: '#D94148',
         'primary-dark': '#B93540',
