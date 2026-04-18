@@ -86,9 +86,13 @@ public class AuthService {
     public UserResponse getMe(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다"));
+        String displayName = user.getCustomNickname() != null
+                ? user.getCustomNickname()
+                : user.getNickname();
         return new UserResponse(
                 user.getId(), user.getGoogleId(),
-                user.getEmail(), user.getNickname(), user.getProfileImage()
+                user.getEmail(), user.getNickname(), user.getProfileImage(),
+                displayName
         );
     }
 }

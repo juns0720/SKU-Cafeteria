@@ -36,7 +36,7 @@
   - 검증: `bootRun` → Flyway V3 적용 확인
 - [x] **BE-A-2b**: `PATCH /auth/me/nickname` 엔드포인트 + 중복 시 409 핸들링
   - 검증: Postman PATCH 성공 / 중복값 → 409 응답 확인
-- [ ] **BE-A-2c**: `GET /auth/me` `displayName` 필드 추가 (`customNickname ?? nickname`)
+- [x] **BE-A-2c**: `GET /auth/me` `displayName` 필드 추가 (`customNickname ?? nickname`)
   - 검증: Postman GET → `displayName` 필드 확인
 
 **Review 3축 별점**

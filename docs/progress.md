@@ -21,7 +21,7 @@
 **customNickname**
 - [x] **BE-A-2a**: `customNickname` 컬럼 (nullable) + V3 migration
 - [x] **BE-A-2b**: `PATCH /auth/me/nickname` + 중복 시 409
-- [ ] **BE-A-2c**: `GET /auth/me` `displayName` 필드 (`customNickname ?? nickname`)
+- [x] **BE-A-2c**: `GET /auth/me` `displayName` 필드 (`customNickname ?? nickname`)
 
 **Review 3축 별점**
 - [ ] **BE-A-3a**: `tasteRating/amountRating/valueRating` 컬럼 (nullable) + V4 migration
