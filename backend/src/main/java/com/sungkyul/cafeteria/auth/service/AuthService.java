@@ -13,6 +13,7 @@ import com.sungkyul.cafeteria.user.entity.User;
 import com.sungkyul.cafeteria.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private static final String GOOGLE_TOKENINFO_URL =
@@ -99,6 +101,7 @@ public class AuthService {
         }
 
         user.changeNickname(validation.displayNickname(), validation.lookupKey());
+        userRepository.flush();
     }
 
     @Transactional(readOnly = true)
@@ -113,7 +116,20 @@ public class AuthService {
             );
         }
 
-        boolean taken = userRepository.existsByNicknameNormalizedAndIdNot(validation.lookupKey(), userId);
+        boolean taken;
+        try {
+            taken = userRepository.existsByNicknameNormalizedAndIdNot(validation.lookupKey(), userId);
+        } catch (RuntimeException e) {
+            log.error(
+                    "Nickname availability lookup failed. userId={}, displayNickname='{}', lookupKey='{}'",
+                    userId,
+                    validation.displayNickname(),
+                    validation.lookupKey(),
+                    e
+            );
+            throw e;
+        }
+
         if (taken) {
             return new NicknameAvailabilityResponse(
                     validation.displayNickname(),
