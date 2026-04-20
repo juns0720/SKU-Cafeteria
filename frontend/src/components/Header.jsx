@@ -1,6 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google';
 
-export default function Header({ user, onLoginSuccess, onLogout }) {
+export default function Header({ user, isLoggedIn, onLoginSuccess, onLogout }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 h-14">
       <div className="max-w-[1100px] mx-auto h-full flex items-center justify-between px-4">
@@ -22,6 +22,11 @@ export default function Header({ user, onLoginSuccess, onLogout }) {
             >
               로그아웃
             </button>
+          </div>
+        ) : isLoggedIn ? (
+          <div className="flex items-center gap-3">
+            <div className="h-5 w-24 rounded-full bg-gray-100 animate-pulse" />
+            <div className="h-4 w-12 rounded-full bg-gray-100 animate-pulse" />
           </div>
         ) : (
           <GoogleLogin

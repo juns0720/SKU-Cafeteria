@@ -77,7 +77,12 @@ function AppInner() {
     <>
       {ToastComponent}
       {showHeader && (
-        <Header user={user} onLoginSuccess={handleLoginSuccess} onLogout={handleLogout} />
+        <Header
+          user={user}
+          isLoggedIn={isLoggedIn}
+          onLoginSuccess={handleLoginSuccess}
+          onLogout={handleLogout}
+        />
       )}
       {isLoginRoute ? (
         routes
