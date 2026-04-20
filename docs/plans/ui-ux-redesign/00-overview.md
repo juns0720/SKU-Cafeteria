@@ -26,7 +26,7 @@
 | D1 | 사용자 BadgeTier | NONE(0) / 🥉 BRONZE(1~4) / 🥈 SILVER(5~29) / 🥇 GOLD(30+) | 디자인 핸드오프 채택 |
 | D2 | NEW 윈도우 | `Menu.firstSeenAt + 7일` 이내 | 디자인 핸드오프 채택 |
 | D3 | `/menus/best` 사양 | 이번 주(월~일) 제공 + 리뷰 ≥ 3 + 평균 desc, **TOP 5** | 디자인 TOP5 + 신뢰도 하한 절충 |
-| D4 | `Menu.corner` 타입 | DB는 **VARCHAR 유지** + Java `Corner` enum + `CornerMapper`. 미매칭은 `KOREAN` fallback + WARN 로그 | PG enum 마이그레이션 비용 회피, 크롤러 신규값 대응 안전 |
+| D4 | `Menu.corner` 타입 | DB는 **VARCHAR 유지**, Java도 raw String 그대로 사용. `GET /menus/corners`는 DB `DISTINCT corner` 반환. enum 매핑 없음 | 크롤링 소스 변경 시 코드 수정 없이 자동 대응, 필터링은 raw String 비교로 충분 |
 | D5 | MealSlot | `menu_dates.meal_slot` 컬럼 신설, 기본 `LUNCH`. DINNER는 후속 (크롤러 미지원) | 식단표가 현재 점심만 |
 | D6 | 닉네임 변경 정책 | **30일 쿨다운**. `users.nickname_changed_at` 컬럼 + 미경과 시 409 with `nextChangeAt` | 정체성 안정성 |
 | D7 | `image_url` → `photo_urls` 전환 | **3단계 expand-contract**: V10에서 `photo_urls TEXT[]` 추가 + 백필 → FE/BE 양쪽 전환 → V11에서 `image_url` DROP | 무중단 |

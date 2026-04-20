@@ -46,7 +46,7 @@
 
 ## Phase 2 — 백엔드 확장 (시그니처 호환 유지)
 
-- [ ] **P2-T1**: `Corner` enum + `CornerMapper.fromString` (한식→KOREAN 등 + fallback WARN)
+- ~~**P2-T1**: `Corner` enum + `CornerMapper.fromString`~~ → **취소**: `corner`는 raw String 유지, DB DISTINCT로 필터 목록 제공 (enum 매핑 불필요)
 - [ ] **P2-T2**: `BadgeTier` enum + `of(long)` (1/5/30 임계값)
 - [ ] **P2-T3**: `MenuTier` enum + `of(Double avg, Long count)` (4.5/4.0/3.5 임계값)
 - [ ] **P2-T4**: `ReviewService.create/update/delete`에서 `recomputeMenuStats(menuId)` 트랜잭션 호출
