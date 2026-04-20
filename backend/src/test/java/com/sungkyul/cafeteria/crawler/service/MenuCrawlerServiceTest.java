@@ -203,6 +203,20 @@ class MenuCrawlerServiceTest {
     }
 
     @Test
+    @DisplayName("저장된 MenuDate의 mealSlot은 LUNCH")
+    void crawlAndSave_savedMenuDate_hasMealSlotLunch() throws Exception {
+        Document doc = Jsoup.parse(SAMPLE_HTML);
+        doReturn(doc).when(crawlerService).fetchDocument();
+
+        crawlerService.crawlAndSave();
+
+        ArgumentCaptor<MenuDate> captor = ArgumentCaptor.forClass(MenuDate.class);
+        verify(menuDateRepository, atLeastOnce()).save(captor.capture());
+        assertThat(captor.getAllValues()).extracting(MenuDate::getMealSlot)
+                .allMatch("LUNCH"::equals);
+    }
+
+    @Test
     @DisplayName("빈 코너명 행은 무시")
     void crawlAndSave_emptyCornerName_isIgnored() throws Exception {
         String htmlWithEmptyCorner = """

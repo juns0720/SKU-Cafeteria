@@ -103,7 +103,7 @@ public class MenuCrawlerService {
                             skippedCount++;
                         } else {
                             menuDateRepository.save(
-                                    MenuDate.builder().menu(menu).servedDate(servedDate).build()
+                                    MenuDate.builder().menu(menu).servedDate(servedDate).mealSlot("LUNCH").build()
                             );
                             savedCount++;
                         }
@@ -159,10 +159,8 @@ public class MenuCrawlerService {
     }
 
     private List<String> splitByBr(Element cell) {
-        cell.select("br").before("\\n");
-        String text = cell.text().replace("\\n", "\n");
         List<String> result = new ArrayList<>();
-        for (String line : text.split("\n")) {
+        for (String line : cell.wholeText().split("\n")) {
             String trimmed = line.trim();
             if (!trimmed.isEmpty()) {
                 result.add(trimmed);
