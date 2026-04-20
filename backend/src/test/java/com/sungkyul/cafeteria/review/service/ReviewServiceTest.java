@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.Optional;
 
@@ -91,5 +92,19 @@ class ReviewServiceTest {
                 .build();
 
         assertThat(review.overallRating()).isEqualTo((5 + 3 + 4) / 3.0);
+    }
+
+    @Test
+    void updateReview_타인리뷰수정시_접근거부예외() {
+        User author = User.builder().id(10L).build();
+        Menu menu = Menu.builder().id(1L).name("김치찌개").corner("한식").build();
+        Review review = Review.builder().id(100L).user(author).menu(menu).build();
+
+        given(reviewRepository.findById(100L)).willReturn(Optional.of(review));
+
+        assertThatThrownBy(() -> reviewService.updateReview(20L, 100L,
+                new com.sungkyul.cafeteria.review.dto.ReviewUpdateRequest(5, 4, 3, "수정", null, null)))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("리뷰 수정 권한이 없습니다");
     }
 }

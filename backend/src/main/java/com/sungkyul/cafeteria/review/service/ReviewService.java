@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,7 +94,7 @@ public class ReviewService {
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다"));
 
         if (!review.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("리뷰 삭제 권한이 없습니다");
+            throw new AccessDeniedException("리뷰 삭제 권한이 없습니다");
         }
 
         Long menuId = review.getMenu().getId();
@@ -107,7 +108,7 @@ public class ReviewService {
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다"));
 
         if (!review.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("리뷰 수정 권한이 없습니다");
+            throw new AccessDeniedException("리뷰 수정 권한이 없습니다");
         }
 
         List<String> photos = resolvePhotoUrls(request.photoUrls(), request.imageUrl());
