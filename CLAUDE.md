@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 성결대학교 학식 리뷰 풀스택 앱.
 - **Backend**: Spring Boot 3.5 / Java 17 / Gradle 8.14 / PostgreSQL
-- **Frontend**: React 19 / Vite / TailwindCSS v3 / React Query v5
+- **Frontend**: React 19 / Vite / TailwindCSS v3 / React Query v5 / Google Fonts(Gaegu, Jua)
 - **Deployment**: Railway (backend), Vercel (frontend)
 - **Auth**: Google OAuth2 idToken → JWT (`Authorization: Bearer`)
 
@@ -64,7 +64,8 @@ npm run lint     # ESLint 검사
 
 ## 프론트엔드 개발 방식
 
-- 기능 단위: FE-B-1처럼 최소 단위로 쪼개서 구현, 한 번에 하나만
+- 기능 단위: `P3-T2`처럼 최소 단위(Task ID)로 쪼개서 구현, 한 번에 하나만 (커밋 메시지에 ID 포함)
 - 구현 완료 후 `docs/plans/ui-ux-redesign/99-progress.md` 체크박스 업데이트
 - `position: fixed` UI(모달 등)는 `createPortal(…, document.body)` 사용 — transform 조상의 stacking context 우회
+- 신규 v2 컴포넌트는 `frontend/src/components/hi/` 하위에 둔다 (기존 `components/`는 v1, 한 페이지씩 교체)
 - 검증: 브라우저에서 눈으로 확인 (375 / 768 / 1280 뷰포트)

@@ -17,7 +17,8 @@
       "Bash(awk '{print $5}')",
       "Bash(break)",
       "Bash(taskkill //F //PID 32696)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(git mv *)"
     ]
   }
 }

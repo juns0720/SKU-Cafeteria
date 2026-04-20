@@ -6,7 +6,7 @@
 
 - 학식 메뉴는 매주 월요일 학교 홈페이지를 크롤링해 자동 수집
 - 학생은 Google 계정으로 로그인 후 메뉴에 맛·양·가성비 3축 별점과 코멘트를 남길 수 있음
-- 목표: 오늘 뭐 먹을지 4탭(홈·주간·전체메뉴·프로필) 이내로 결정, 리뷰 신뢰도 확보
+- 목표: 오늘 뭐 먹을지 4탭(홈·주간·전체·프로필) 이내로 결정, 리뷰 신뢰도 확보
 
 ---
 
@@ -18,16 +18,18 @@
 
 ### [UI/UX 전면 개편](./ui-ux-redesign/) (진행 중)
 
-2026-04-18 확정된 v2 UI/UX 개편. 4탭 구조 + 3축 별점 + 프로필 탭 + 사진 업로드.
+2026-04-18 v2 방향 확정 + 2026-04-19 디자인 핸드오프 도착으로 **시각 시스템까지 전면 교체**. 4탭 구조 + 3축 별점 + 프로필 탭 + 사진 업로드 + 종이/잉크 톤 디자인.
 
 읽는 순서:
-1. [`00-overview.md`](./ui-ux-redesign/00-overview.md) — 결정 사항·의존성·배포 전략
+1. [`00-overview.md`](./ui-ux-redesign/00-overview.md) — 결정 사항(D1~D8)·의존성 그래프·배포 전략
 2. [`99-progress.md`](./ui-ux-redesign/99-progress.md) — 현재 진행 상태 (체크박스 단일 소스)
 3. **다음 작업할 단위의 Phase 파일**만 선택적으로:
-   - [`01-phase-a-backend.md`](./ui-ux-redesign/01-phase-a-backend.md) — BE-A-*
-   - [`02-phase-b-profile.md`](./ui-ux-redesign/02-phase-b-profile.md) — FE-B-*
-   - [`03-phase-c-ui.md`](./ui-ux-redesign/03-phase-c-ui.md) — FE-C-*
-   - [`04-phase-d-photo.md`](./ui-ux-redesign/04-phase-d-photo.md) — BE-D-*, FE-D-*
+   - [`01-phase-1-db.md`](./ui-ux-redesign/01-phase-1-db.md) — Flyway V8~V11 마이그레이션 (P1-T1~T5)
+   - [`02-phase-2-backend.md`](./ui-ux-redesign/02-phase-2-backend.md) — BE 응답 확장·신규 엔드포인트 (P2-T1~T15)
+   - [`03-phase-3-design-system.md`](./ui-ux-redesign/03-phase-3-design-system.md) — Tailwind 토큰·api 모듈·hi/ 컴포넌트 (P3-T1~T5)
+   - [`04-phase-4-pages.md`](./ui-ux-redesign/04-phase-4-pages.md) — 페이지 재작성 (P4-T1~T10)
+   - [`05-phase-5-cleanup.md`](./ui-ux-redesign/05-phase-5-cleanup.md) — 레거시 삭제·V11 DROP·배포 (P5-T1~T4)
+   - [`06-phase-d-photo.md`](./ui-ux-redesign/06-phase-d-photo.md) — Cloudinary 다중 업로드 (PD-T1~T3)
 
 ---
 
@@ -35,7 +37,8 @@
 
 완료되었거나 현재 유효하지 않은 플랜. 참조 전용.
 
-- [`archive/frontend-v1.md`](./archive/frontend-v1.md) — v1 프론트 초기 계획 (디자인 토큰은 `docs/DESIGN.md`에 통합)
+- [`archive/frontend-v1.md`](./archive/frontend-v1.md) — v1 프론트 초기 계획
+- [`archive/ui-ux-v1-phases/`](./archive/ui-ux-v1-phases/) — v1 Phase A/B/C/D 명명 (BE-A-* / FE-B-* / FE-C-* / BE-D-* / FE-D-*) 시절 단위 명세. 신규 P*-T*로의 흡수 매핑은 [`ui-ux-redesign/99-progress.md`](./ui-ux-redesign/99-progress.md) 하단 표 참조.
 
 ---
 
