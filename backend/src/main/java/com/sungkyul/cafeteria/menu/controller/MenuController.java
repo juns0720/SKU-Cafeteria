@@ -32,6 +32,11 @@ public class MenuController {
         return ResponseEntity.ok(menuService.getMenus(sort, corner, scope));
     }
 
+    @GetMapping("/best")
+    public ResponseEntity<List<MenuResponse>> getBest() {
+        return ResponseEntity.ok(menuService.getBestOfWeek());
+    }
+
     @GetMapping("/corners")
     public ResponseEntity<List<String>> getCorners() {
         return ResponseEntity.ok(menuService.getCorners());

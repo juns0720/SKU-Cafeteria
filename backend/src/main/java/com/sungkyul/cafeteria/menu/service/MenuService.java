@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+
+import org.springframework.data.domain.PageRequest;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,17 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final MenuDateRepository menuDateRepository;
+
+    @Transactional(readOnly = true)
+    public List<MenuResponse> getBestOfWeek() {
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        LocalDate sunday = monday.plusDays(6);
+        return menuRepository.findBestOfWeek(monday, sunday, 3, PageRequest.of(0, 5))
+                .stream()
+                .map(MenuResponse::from)
+                .toList();
+    }
 
     @Transactional(readOnly = true)
     public List<String> getCorners() {

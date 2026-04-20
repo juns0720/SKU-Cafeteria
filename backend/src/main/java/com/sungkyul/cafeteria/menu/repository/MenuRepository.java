@@ -2,10 +2,12 @@ package com.sungkyul.cafeteria.menu.repository;
 
 import com.sungkyul.cafeteria.menu.dto.MenuAggregateProjection;
 import com.sungkyul.cafeteria.menu.entity.Menu;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +50,22 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
         WHERE m.id = :menuId
     """)
     Optional<MenuAggregateProjection> findAggregatedById(@Param("menuId") Long menuId);
+
+    /** 이번 주 BEST TOP N — 리뷰 수 하한 + avgOverall 내림차순 */
+    @Query("""
+        SELECT m FROM Menu m
+        JOIN MenuDate md ON md.menu = m
+        WHERE md.servedDate BETWEEN :monday AND :sunday
+          AND m.reviewCount >= :minReviews
+        GROUP BY m
+        ORDER BY m.avgOverall DESC NULLS LAST
+    """)
+    List<Menu> findBestOfWeek(
+            @Param("monday") LocalDate monday,
+            @Param("sunday") LocalDate sunday,
+            @Param("minReviews") int minReviews,
+            Pageable pageable
+    );
 
     /** 존재하는 코너 목록 (FE CornerTabs 용) */
     @Query("SELECT DISTINCT m.corner FROM Menu m ORDER BY m.corner")

@@ -34,4 +34,8 @@ public record MenuResponse(
                 m.getAvgTaste(), m.getAvgAmount(), m.getAvgValue(), m.getAvgOverall()
         );
     }
+
+    public static MenuResponse from(Menu m) {
+        return from(m, null);
+    }
 }
