@@ -116,6 +116,7 @@
 
 - [ ] RefreshToken 관리 미구현 — 발급만, 저장 안 함. Redis(Upstash 무료) 별도 트랙
 - [ ] AdminController 인가 — 일반 JWT로 접근 가능, ROLE_ADMIN 분리 별도 트랙
+- [ ] 닉네임 비속어/은어 필터 고도화 — 범위가 넓어 Phase 4/5 완료 후 별도 후속 작업으로 진행
 - [ ] BE-A-7 (Phase A 단독 Railway 배포) — Phase 2 게이트로 흡수
 - [x] ~~Menu API N+1 쿼리~~ → BE-A-5a 완료
 - [x] ~~`GlobalExceptionHandler` IllegalArgumentException → 403 매핑 부적절~~ → P2-T15에서 정정 예정
