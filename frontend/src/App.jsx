@@ -9,6 +9,7 @@ import DevComponentsPage from './pages/DevComponentsPage'
 import LoginPage from './pages/LoginPage'
 import MenuDetailPage from './pages/MenuDetailPage'
 import ProfilePage from './pages/ProfilePage'
+import ReviewWritePage from './pages/ReviewWritePage'
 import WeeklyPage from './pages/WeeklyPage'
 import NicknameSetupModal from './components/hi/NicknameSetupModal'
 import TabBarHi from './components/hi/TabBarHi'
@@ -125,6 +126,7 @@ function AppInner() {
       <Route path="/weekly" element={isLoggedIn ? <WeeklyPage /> : <Navigate to="/login" replace />} />
       <Route path="/menus" element={isLoggedIn ? <AllMenusPage /> : <Navigate to="/login" replace />} />
       <Route path="/menus/:id" element={isLoggedIn ? <MenuDetailPage /> : <Navigate to="/login" replace />} />
+      <Route path="/menus/:id/review" element={isLoggedIn ? <ReviewWritePage /> : <Navigate to="/login" replace />} />
       <Route path="/reviews" element={<Navigate to={isLoggedIn ? '/menus' : '/login'} replace />} />
       <Route path="/profile" element={isLoggedIn ? <ProfilePage /> : <Navigate to="/login" replace />} />
       <Route path="/my-reviews" element={<Navigate to="/profile" replace />} />

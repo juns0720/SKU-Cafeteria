@@ -94,7 +94,7 @@ function DetailSkeleton() {
   )
 }
 
-function ReviewCard({ review, onDelete, isDeleting }) {
+function ReviewCard({ review, onDelete, onEdit, isDeleting }) {
   const badgeEmoji = BADGE_EMOJI[review.authorBadgeTier] ?? BADGE_EMOJI.NONE
   const photoUrls = review.photoUrls?.filter(Boolean) ?? []
 
@@ -176,8 +176,9 @@ function ReviewCard({ review, onDelete, isDeleting }) {
             <div className="mt-4 flex items-center gap-2">
               <button
                 type="button"
-                disabled
-                className="rounded-full border border-rule bg-paper px-3 py-1.5 font-hand text-xs text-mute opacity-60"
+                onClick={onEdit}
+                disabled={isDeleting}
+                className="rounded-full border border-rule bg-paper px-3 py-1.5 font-hand text-xs text-inkSoft transition-transform active:scale-[0.98] disabled:opacity-50"
               >
                 수정
               </button>
@@ -247,6 +248,10 @@ export default function MenuDetailPage() {
     }
 
     deleteMutation.mutate(reviewId)
+  }
+
+  const handleOpenReviewForm = () => {
+    navigate(`/menus/${menuId}/review`)
   }
 
   if (!isValidMenuId) {
@@ -422,6 +427,7 @@ export default function MenuDetailPage() {
                     key={review.id}
                     review={review}
                     onDelete={handleDeleteReview}
+                    onEdit={handleOpenReviewForm}
                     isDeleting={deleteMutation.isPending && deleteMutation.variables === review.id}
                   />
                 ))}
@@ -435,8 +441,8 @@ export default function MenuDetailPage() {
         <div className="mx-auto w-full max-w-[760px]">
           <button
             type="button"
-            disabled
-            className="flex w-full items-center justify-center rounded-[18px] border-[1.8px] border-ink bg-ink px-5 py-3.5 font-disp text-base text-paper shadow-flat opacity-60"
+            onClick={handleOpenReviewForm}
+            className="flex w-full items-center justify-center rounded-[18px] border-[1.8px] border-ink bg-ink px-5 py-3.5 font-disp text-base text-paper shadow-flat transition-transform active:scale-[0.99]"
           >
             {ctaLabel}
           </button>
