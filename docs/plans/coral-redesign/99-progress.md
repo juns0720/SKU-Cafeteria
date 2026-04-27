@@ -19,7 +19,7 @@
 ## Phase v3-1 — Foundation (디자인 시스템)
 
 - [x] **V3-T1**: `tailwind.config.js`에 Coral 토큰 추가 (coral / coralSoft / g50~g900 / frame shadow / hairline / Pretendard / 2xs·xs radius)
-- [ ] **V3-T2**: `index.html`에 Pretendard CDN link 추가 (Gaegu/Jua는 일단 유지)
+- [x] **V3-T2**: `index.html`에 Pretendard CDN link 추가 (Gaegu/Jua는 일단 유지)
 - [ ] **V3-T3**: `components/coral/Icon.jsx` (17 SVG path)
 - [ ] **V3-T4**: 기본 컴포넌트 9종 — `Frame` / `Status` / `Header` / `Stars` / `Chip` / `Sec` / `Thumb` (corner→illustration 매핑) / `Button` / `Tab`
 - [ ] **V3-T5**: 컴포지트 10종 — `BestRow` / `WeekPicker` / `CategoryFilter` / `MedalDot` / `MultiStarInput` / `MultiStarSummary` / `ProgressBar` / `StatsGrid` / `Empty` / `AxisProgress`
