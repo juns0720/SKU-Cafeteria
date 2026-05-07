@@ -20,8 +20,11 @@ export default function Tab({ current }) {
           <button
             key={tab.key}
             onClick={() => navigate(tab.path)}
-            className="flex-1 flex flex-col items-center justify-center gap-1"
+            className="flex-1 flex flex-col items-center justify-center gap-1 relative"
           >
+            {active && (
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-coral rounded-b-full" />
+            )}
             <Icon
               name={tab.icon}
               size={22}
