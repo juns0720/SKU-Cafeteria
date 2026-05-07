@@ -156,7 +156,9 @@ export default function HomePage() {
           />
         ) : todayData?.isHoliday ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
-            <span className="text-[32px]">🎌</span>
+            <div className="w-14 h-14 rounded-2xl bg-g100 flex items-center justify-center">
+              <Icon name="cal" size={28} color="#8B95A1" />
+            </div>
             <div className="text-[16px] font-bold text-g900">오늘은 휴일이에요</div>
             <div className="text-[13px] text-g500">학식이 운영되지 않습니다</div>
           </div>
