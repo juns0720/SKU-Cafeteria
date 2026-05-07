@@ -9,7 +9,7 @@ const AXES = [
 export default function AxisProgress({ taste, amount, value }) {
   const values = { taste, amount, value };
   return (
-    <div className="p-4 rounded-2xl bg-g50 grid grid-cols-3 gap-2">
+    <div className="p-4 rounded-2xl bg-g50 border border-g200 grid grid-cols-3 gap-2">
       {AXES.map(axis => {
         const val = values[axis.key];
         const pct = val != null ? `${(val / 5) * 100}%` : '0%';

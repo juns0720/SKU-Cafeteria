@@ -3,7 +3,7 @@
 export default function ProgressBar({ current, target, nextTierLabel, remaining }) {
   const pct = target > 0 ? Math.min((current / target) * 100, 100) : 0;
   return (
-    <div className="p-3.5 rounded-[14px] bg-g50">
+    <div className="p-3.5 rounded-[14px] bg-g50 border border-g200">
       <div className="flex justify-between items-center">
         <span className="text-[13px] font-semibold text-g700">
           다음 뱃지 <span className="font-extrabold text-g900">{nextTierLabel}</span>까지

@@ -19,7 +19,10 @@ export default function BestRow({ items = [], onItemClick }) {
             className="w-[124px] flex-shrink-0 text-left"
           >
             {/* Thumbnail */}
-            <div className="w-[124px] h-[124px] rounded-[14px] bg-g100 relative flex items-center justify-center">
+            <div
+              className="w-[124px] h-[124px] rounded-[14px] bg-g100 relative flex items-center justify-center"
+              style={i === 0 ? { boxShadow: '0 0 0 2px rgba(255, 107, 92, 0.35)' } : undefined}
+            >
               <Icon
                 name={ICON_BY_CORNER[item.corner] ?? 'bowl'}
                 size={50}
